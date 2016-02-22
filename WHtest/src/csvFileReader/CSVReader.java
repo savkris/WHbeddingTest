@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Models.Bet;
 import Models.Customer;
 
 /**
@@ -25,8 +26,9 @@ public class CSVReader {
 	 */
 	
 	private static String settledCSVfilePath = "CSVfiles/Settled.csv";	
-	private String unsettledCSVfilePath = "CSVfiles/Unsettled.csv";
+	private static String unsettledCSVfilePath = "CSVfiles/Unsettled.csv";
 	
+	private String content = "";
 	private ArrayList<Customer> customersList;
 	
 	public CSVReader()
@@ -35,7 +37,7 @@ public class CSVReader {
 	}
 	
 	//TODO- parse the cols and rows earlier for performance
-	public void readFile(String csvFile) {		
+	public void readFile(String csvFile, Boolean isSettled) {		
         String line = "";
 		BufferedReader br;		
 		try {
@@ -45,56 +47,91 @@ public class CSVReader {
 			    // use comma as separator
 			    String[] splitLineArray = line.split(",");
 			    
-			    //ReadAndStore 
-			    extractLine(splitLineArray);
-			  			   
+			    //ReadAndStore only once for performance,  instead of querying every time when info needed
+			    extractLine(splitLineArray, true);		   
 			}
+			//just for testing and output 
+			String eol = System.getProperty("line.separator");
+			for (Customer cust : customersList) 
+			{
+			 content  += eol+"Customer ID = " + Long.toString(cust.CustomerID) + eol+ "settledBetsTotal = "+ cust.SettledBetsList.size() + eol+ 
+					 "unsettledBetsTotal = " + cust.UnSettledBetsList.size() + eol;
+			}
+
+	        Writer wr = new Writer();
+	        //wr.writeStringToFile("customer and their bets totals ", content);
+	        System.out.println(content);	
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	  }
-	private Boolean custExists;
-	private void extractLine(String[] cols) {	
+	private void extractLine(String[] cols, Boolean isSettledBet) {	
 		//0 = custID
 		//1 = ventID
 		//2 = partID 
 		//3 = stake
 		//4 = win
-		
-		//for each line reset bool, assuming its a new customer
-		custExists = false;
-		CheckIfCustExist(customersList, Long.parseLong(cols[0]) );
-		
-		if(!custExists)
+				
+		//check first if customer already exists, else return existing
+		Customer customer  = CheckIfCustExist(customersList, Long.parseLong(cols[0]));
+		if(customer == null)
 		{
-			Customer cust = new Customer();
-			cust.CustomerID = Long.parseLong(cols[0]);
-			customersList.add(cust);
-			System.out.println("new customer created with ID" + cols[0]);
-		}
-		else
-		{
-			System.out.println("customer already exists with ID" + cols[0]);
+			customer = CreateNewCustomer(cols);
 		}
 		
+		//add bet for each and add to corresponding customer
+		Bet bet = createNewbet(cols, isSettledBet);
+		if(bet !=null && customer !=null)
+		{
+			if(isSettledBet)
+			{
+				customer.SettledBetsList.add(bet);
+			}
+			else
+			{
+				customer.UnSettledBetsList.add(bet);
+			}
+		}
 		
 	}
 
-	private void CheckIfCustExist(ArrayList<Customer> customers, long colsID) {
-		//TODO- check if customer exists in the list already, if not create new and add bet		
+	private Bet createNewbet(String[] cols, Boolean isSettledBet) {
+		Bet bet = new Bet();
+		bet.IsSettled = isSettledBet;
+		bet.EventID = Long.parseLong(cols[1]);
+		bet.ParticipantID = Long.parseLong(cols[2]);
+		bet.StakeAmount = Long.parseLong(cols[3]);
+		bet.WinAmount = Long.parseLong(cols[4]);
+		return bet;
+	}
+
+	private Customer CreateNewCustomer(String[] cols) {
+		Customer cust = new Customer();
+		cust.CustomerID = Long.parseLong(cols[0]);
+		customersList.add(cust);
+		//System.out.println("new customer created with ID" + cols[0]);		
+		return cust;
+	}
+
+	private Customer CheckIfCustExist(ArrayList<Customer> customers, long colsID) {
 		for (Customer existingCustomer : customersList) 
 		{
 			if(existingCustomer.CustomerID == colsID )
 			{
-				custExists = true;
+				//System.out.println("customer already exists with ID" + existingCustomer.CustomerID);
+				return existingCustomer;
 			}
 		}
+		return null;
 	}
+	
 	public static void main(String[] args) {
 		CSVReader reader = new CSVReader();
-		reader.readFile(settledCSVfilePath);
+		reader.readFile(settledCSVfilePath, true); 
+		//reader.readFile(settledCSVfilePath, true); 
 	}
 
 }
