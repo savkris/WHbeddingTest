@@ -1,0 +1,21 @@
+TASK 1 
+Customer ID = 1
+won bets Total = 7
+settled Bets Total = 10
+unsettledBetsTotal = 4
+BETS HISTORY :
+Bet event ID = 1 Skate Amount = 50 Amount Won = 250
+Bet event ID = 2 Skate Amount = 20 Amount Won = 60
+Bet event ID = 4 Skate Amount = 50 Amount Won = 120
+Bet event ID = 5 Skate Amount = 50 Amount Won = 400
+Bet event ID = 6 Skate Amount = 40 Amount Won = 160
+Bet event ID = 8 Skate Amount = 80 Amount Won = 320
+Bet event ID = 9 Skate Amount = 60 Amount Won = 480
+TASK 2 
+RISKY UNSETTLED BETS:
+Bet ID = 11 Stake Amount = 50 ToWin Amount = 500
+Bet ID = 12 Stake Amount = 500 ToWin Amount = 5000
+Bet ID = 13 Stake Amount = 50 ToWin Amount = 200
+Bet ID = 14 Stake Amount = 1000 ToWin Amount = 8000
+Bet ID = 13 Stake Amount = 500 ToWin Amount = 4000
+HIGH RISK :

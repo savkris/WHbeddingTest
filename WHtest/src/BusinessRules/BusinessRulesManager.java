@@ -19,14 +19,14 @@ public BusinessRulesManager()
 public void checkBetForRisk(Bet bet, Customer cust)
 {
 	cust.AverageBetAmount = AverageBetAmount(cust.SettledBetsList);
-		if(IsTenTimesHigherThanAvrg(cust, bet) | IsOverThousandBet(bet, cust) )
+		if(IsTenTimesHigherThanAvrg(cust, bet) | IsOverThousandBet(bet, cust))
 		{
 			bet.IsRisky = true;
 		}
 		if(IsThirtyTimesHigherThanAvrg(cust, bet))
 		{
 			bet.IsHighRisk = true;
-		}
+		}		
 
 }
 public Boolean IsUnusualWinning(List<Bet> totalSettledBets, double totalNumberOfWins) // task 1

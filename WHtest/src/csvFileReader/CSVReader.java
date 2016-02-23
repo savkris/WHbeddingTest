@@ -29,6 +29,7 @@ public class CSVReader {
 	private static String settledCSVfilePath = "CSVfiles/Settled.csv";	
 	private static String unsettledCSVfilePath = "CSVfiles/Unsettled.csv";
 	
+	private String ToWriteToFile= "";
 	private String eol = System.getProperty("line.separator");
 	private ArrayList<Customer> customersList;
 	
@@ -151,10 +152,9 @@ public class CSVReader {
 							" Amount Won = " + Long.toString(bet.WinAmount) ;	
 				}
 				}
-			}		
-        //Writer wr = new Writer();
-        //wr.writeStringToFile("customer and their bets totals ", content);
-        System.out.println(content +eol + betsContent);
+			}
+		ToWriteToFile += content + betsContent;
+	        System.out.println(content +eol + betsContent);
 	}
 	
 	private void printTaskTwo()
@@ -167,6 +167,11 @@ public class CSVReader {
 		{
 				for (Bet bet : cust.UnSettledBetsList) 
 				{
+					if(cust.IsUnusualWinner)
+					{
+						bet.IsRisky = true;
+					}
+					
 					if(bet.IsRisky)
 					{
 						betsContentOne  += eol + "Bet ID = " + bet.EventID + " Stake Amount = " + bet.StakeAmount + " ToWin Amount = " + bet.WinAmount;
@@ -177,8 +182,9 @@ public class CSVReader {
 					}
 				}
 			}		
-        //Writer wr = new Writer();
-        //wr.writeStringToFile("customer and their bets totals ", content);
+		ToWriteToFile += eol +content + eol +betsContentOne + eol+ betsContentTwo;
+		Writer wr = new Writer();
+        wr.writeStringToFile(ToWriteToFile);
         System.out.println(content +eol + betsContentOne +eol + betsContentTwo );
 	}
 	public static void main(String[] args) {

@@ -11,12 +11,13 @@ public Writer()
 {	
 }
 
-public void writeStringToFile(String Header, String content)
+public void writeStringToFile(String content)
 {
+	
 	try {
+		
 
-
-		File file = new File("/users/kristina/WHtestOutput.txt");
+		File file = new File("CSVfiles/OutputInterface.txt");
 
 		// if file doesnt exists, then create it
 		if (!file.exists()) {
