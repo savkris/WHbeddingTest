@@ -37,7 +37,6 @@ public class CSVReader {
 		customersList = new ArrayList<Customer>();
 	}
 	
-	//TODO- parse the cols and rows earlier for performance
 	public void readFile(String csvFile, Boolean isSettled) {		
         String line = "";
 		BufferedReader br;		
@@ -74,7 +73,7 @@ public class CSVReader {
 		}
 		
 		//create and add bet to corresponding customer
-		Bet bet = createNewbet(cols, isSettledBet);
+		Bet bet = createNewbet(cols, isSettledBet, customer);
 		if(bet != null && customer != null)
 		{
 			if(isSettledBet)
@@ -92,13 +91,18 @@ public class CSVReader {
 		}		
 	}
 
-	private Bet createNewbet(String[] cols, Boolean isSettledBet) {
+	private Bet createNewbet(String[] cols, Boolean isSettledBet, Customer cust) {
 		Bet bet = new Bet();
 		bet.IsSettled = isSettledBet;
 		bet.EventID = Long.parseLong(cols[1]);
 		bet.ParticipantID = Long.parseLong(cols[2]);
 		bet.StakeAmount = Long.parseLong(cols[3]);
 		bet.WinAmount = Long.parseLong(cols[4]);
+		
+		if(!isSettledBet)
+		{
+			BusinessRulesManager.Instance.checkBetForRisk(bet, cust);
+		}
 		return bet;
 	}
 
@@ -150,29 +154,32 @@ public class CSVReader {
 			}		
         //Writer wr = new Writer();
         //wr.writeStringToFile("customer and their bets totals ", content);
-        System.out.println(content + betsContent);
+        System.out.println(content +eol + betsContent);
 	}
 	
 	private void printTaskTwo()
 	{
 		String content = "TASK 2 " ;
-		String betsContentOne = "RISKY UNSETTLED BETS BY CUSTUMERS WINNING HISTORY:" ; // task 2.1
-		String betsContentTwo = "RISKY BETS BY AVERAGE :" ; //task 2.2
+		String betsContentOne = "RISKY UNSETTLED BETS:" ; // task 2.1
+		String betsContentTwo = "HIGH RISK :" ; //task 2.2
 	
 		for (Customer cust : customersList) 
 		{
-			if(cust.IsUnusualWinner)
-			{
 				for (Bet bet : cust.UnSettledBetsList) 
 				{
-					betsContentOne  += eol + "Bet ID = " + bet.EventID + " Stake Amount = " + bet.StakeAmount + " ToWin Amount = " + bet.WinAmount;
-				}
-				
+					if(bet.IsRisky)
+					{
+						betsContentOne  += eol + "Bet ID = " + bet.EventID + " Stake Amount = " + bet.StakeAmount + " ToWin Amount = " + bet.WinAmount;
+					}
+					if(bet.IsHighRisk)
+					{
+						betsContentTwo += eol + "Bet ID = " + bet.EventID + " Stake Amount = " + bet.StakeAmount + " ToWin Amount = " + bet.WinAmount;
+					}
 				}
 			}		
         //Writer wr = new Writer();
         //wr.writeStringToFile("customer and their bets totals ", content);
-        System.out.println(content + betsContentOne);
+        System.out.println(content +eol + betsContentOne +eol + betsContentTwo );
 	}
 	public static void main(String[] args) {
 		new BusinessRulesManager();
